@@ -10,25 +10,25 @@ import win32gui, win32con
 # Função para processar as operações
 def operations(escolha):
     if escolha=='1':
-        ver_carteira(carregar_ficheiro())
+        ver_carteira(carregar_ficheiro('wallet.csv'))
     elif escolha=='2':
-        adicionar_creditos(carregar_ficheiro())
+        adicionar_creditos(carregar_ficheiro('wallet.csv'))
     elif escolha=='3':
-        remover_creditos(carregar_ficheiro())
+        remover_creditos(carregar_ficheiro('wallet.csv'))
     elif escolha=='4':
         os.system('cls')
-        emprestimo(carregar_ficheiro())
+        emprestimo(carregar_ficheiro('wallet.csv'))
     elif escolha=='5':
         os.system('cls')
-        resolver_emprestimo(carregar_ficheiro_emprestimos(),carregar_ficheiro())
+        resolver_emprestimo(carregar_ficheiro('emprestimos.csv'),carregar_ficheiro('wallet.csv'))
     elif escolha=='6':
-        ver_emprestimos(carregar_ficheiro_emprestimos())
+        ver_emprestimos(carregar_ficheiro('emprestimos.csv'))
     elif escolha=='7':
-        ver_extrato(carregar_ficheiro_extrato())
+        ver_extrato(carregar_ficheiro('transactions.csv'))
     elif escolha=='8':
-        reset_carteira(carregar_ficheiro())
+        reset_carteira(carregar_ficheiro('wallet.csv'))
     elif escolha=='9':
-        enviar_email(carregar_ficheiro_emprestimos(), carregar_ficheiro(), carregar_ficheiro_extrato())
+        enviar_email(carregar_ficheiro('emprestimos.csv'), carregar_ficheiro('wallet.csv'), carregar_ficheiro('transactions.csv'))
     elif escolha=='0':
         os.system('cls')
         sys.exit(1)

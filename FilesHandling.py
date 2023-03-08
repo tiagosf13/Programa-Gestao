@@ -1,82 +1,61 @@
 import os
-
+import csv
 
 
 # Função para carregar o ficheiro wallet.csv
-def carregar_ficheiro():
-    lst=[]
-    with open("wallet.csv") as file:
-        for line in file:
-            lst.append(line.strip().split(","))
-    for element in lst:
-        element[1]=int(element[1])
-    return lst
-
-
-# Função para carregar o ficheiro emprestimos.csv
-def carregar_ficheiro_emprestimos():
-    lst=[]
-    with open("emprestimos.csv") as file:
-        for line in file:
-            lst.append(line.strip().split(","))
-    newlst=[]
-    for element in lst:
-        if element[0]!='':
-            newlst.append(element)
-    file_open=open('emprestimos.csv', 'w')
-    for element in newlst:
-        file_open.write(element[0]+','+element[1]+','+element[2]+','+element[3]+','+element[4]+','+element[5]+','+element[6]+'\n')
-        element[1]=int(element[1])
-    return newlst
-
-
-# Função para carregar o ficheiro transactions.csv
-def carregar_ficheiro_extrato():
-    lst=[]
-    with open("transactions.csv") as file:
-        for line in file:
-            lst.append(line.strip().split(","))
-    if lst==[]:
-        os.system('cls')
-        return lst
-    for element in lst:
-        element[1]=int(element[1])
+# string -> list[string[]]
+def carregar_ficheiro(file):
+    lst = []
+    if file not in os.listdir():
+        csv_file = open(file, 'w')
+        if file == 'wallet.csv':
+            csv_file.write('0.01,0\n0.02,0\n0.05,0\n0.1,0\n0.2,0\n0.5,0\n1,0\n2,0\n5,0\n10,0\n20,0\n50,0\n100,0\n500,0')
+        elif file == 'emprestimos.csv':
+            csv_file.write('')
+        csv_file.close()
+    csv_reader = csv.reader(open(file), delimiter=',')
+    for row in csv_reader:
+        if row != []:
+            lst.append(row)
     return lst
 
 
 # Função para modificar o ficheiro wallet.csv
+# list[string[]], string, string, int -> boolean
 def modificar_ficheiro(carteira,ficheiro,moeda,quantidade_modificada):
-    for element in carteira:
-        if element[0]==moeda:
-            element[1]=quantidade_modificada
     fileop=open(ficheiro,'w')
+
     for element in carteira:
-        fileop.write(str(element[0])+','+str(element[1])+'\n')
+        if element[0] == moeda:
+            element[1] = str(quantidade_modificada)
+        fileop.write(element[0] + ',' + element[1] + '\n')
+
+    fileop.close()
+
     for element in carteira:
-        if element[0]==moeda:
-            if element[1]==quantidade_modificada:
-                return True
-            else:
-                return False
+        if element[0] == moeda and element[1] == str(quantidade_modificada):    
+            return True
+
+    return False
 
 
 # Função para modificar o ficheiro emprestimos.csv
+# list[string[]], string, string, string, string, string, string -> boolean
 def modificar_ficheiro_emprestimos(lista_emprestimos,ficheiro,moeda_emprestimo,quantidade_emprestimo, pessoa,data_emprestimo,codigo_emprestimo):
-    moeda_emprestimo_int=int(moeda_emprestimo)
-    for element in lista_emprestimos:
-        if (element[1]==moeda_emprestimo_int) and (element[2]==quantidade_emprestimo) and(element[4]==pessoa) and (element[0]==data_emprestimo) and(element[6]==codigo_emprestimo):
-            element[5]='Resolvido'
     fileop=open(ficheiro,'w')
+    
     for element in lista_emprestimos:
-        fileop.write(str(element[0])+','+str(element[1])+','+str(element[2]+','+str(element[3])+','+str(element[4])+','+str(element[5])+','+str(element[6])+'\n'))
+        if (element[1]==moeda_emprestimo) and (element[2]==quantidade_emprestimo) and(element[4]==pessoa) and (element[0]==data_emprestimo) and(element[6]==codigo_emprestimo):
+            element[5]='Resolvido'
+        fileop.write(element[0]+','+element[1]+','+element[2]+','+element[3]+','+element[4]+','+element[5]+','+element[6]+'\n')
+    
+    fileop.close()
+    
     for element in lista_emprestimos:
-        if element[4]==pessoa:
-            if element[1]==moeda_emprestimo_int:
-                if element[2]==quantidade_emprestimo:
-                    print(element[0])
-                    print(data_emprestimo)
-                    if element[0]==data_emprestimo:
-                        return True
+        if element[4]==pessoa and element[1]==moeda_emprestimo and element[2]==quantidade_emprestimo and element[0] == data_emprestimo:
+            return True
+    
+    return False
 
 
 # Função para adicionar uma nova linha de informação a um ficheiro

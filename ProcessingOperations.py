@@ -6,36 +6,44 @@ from random import randrange
 
 
 # Função para registar as transações no ficheiro transactions.csv
-def transferencias(moeda,quantidade,quantidade_inicial,quantidade_modificada,total,tipo_operacao):
+# string, string, int, int, string -> void
+def transactions(moeda,quantidade,quantidade_inicial,quantidade_modificada,tipo_operacao):
     filetransedit=open('transactions.csv', 'a+')
-    append_new_line('transactions.csv',datetime.today().strftime('%Y-%m-%d %H:%M:%S') + ',' + str(moeda)+ ',' + str(quantidade) +',' + str(quantidade_inicial) + ',' + str(quantidade_modificada) + ',' + str(total) + ',' + tipo_operacao + ',' + ver_saldo(carregar_ficheiro()))
+    if '.' in moeda:
+        total = float(moeda) * float(quantidade)
+    else:
+        total = int(moeda) * int(quantidade)
+    
+    append_new_line('transactions.csv',datetime.today().strftime('%Y-%m-%d %H:%M:%S') + ',' + moeda+ ',' + quantidade +',' + str(quantidade_inicial) + ',' + str(quantidade_modificada) + ',' + str(total) + ',' + tipo_operacao + ',' + ver_saldo(carregar_ficheiro('wallet.csv')))
     filetransedit.close()
 
 
 # Função para ver o saldo total da carteira
+# list[string[]] -> string
 def ver_saldo(wallet_list):
     total_carteira=0
+
     for sublist in wallet_list:
-        moeda=sublist[0]
-        quantidade=sublist[1]
-        total=float(moeda)*float(quantidade)
-        total_carteira+=total
-    saldo=str(total_carteira)+'€'
-    return saldo
+        total_carteira += float(sublist[0])*float(sublist[1])
+
+    return str(total_carteira)+'€'
 
 
 # Função para gerar um código aleatório de 10 dígitos para o empréstimo
+# void -> string
 def codigo():
     codigo_emprestimo=str(randrange(1000000000,9999999999))
-    if carregar_ficheiro_emprestimos()==[]:
+    if carregar_ficheiro('emprestimos.csv')==[]:
         return codigo_emprestimo
     else:
-        for element in carregar_ficheiro_emprestimos():
+        for element in carregar_ficheiro('emprestimos.csv'):
             if element[6]==codigo_emprestimo:
                 return codigo()
             else:
                 return codigo_emprestimo
 
+
+# list[string[]], string -> string, string
 def operations_add_remove_loan(wallet_list, operation):
     dic_operations = {'adicionar': 'adicionada', 'remover': 'removida', 'emprestar': 'emprestada'}
     lst_numerario=[]
@@ -49,10 +57,8 @@ def operations_add_remove_loan(wallet_list, operation):
         if moeda=='B':
             os.system('cls')
             return None, None
-        for element in wallet_list:
-            lst_numerario.append(element[0])
+        [lst_numerario.append(element[0]) for element in wallet_list]
         if moeda in lst_numerario:
-            print('')
-            print('')
+            print(2*'\n')
             quantidade=input('Quantidade da moeda a ser '+dic_operations[operation]+'(se introduziu a moeda errada insira B):\n')
     return moeda, quantidade
